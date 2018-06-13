@@ -69,6 +69,7 @@ public class DiceJobSearch {
 		
 		driver.close();
 		// ADDED NEW LINE
+		//ANOTHER LINE
 	}
 
 }
