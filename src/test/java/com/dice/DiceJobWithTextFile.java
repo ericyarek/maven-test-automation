@@ -1,8 +1,14 @@
 package com.dice;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
@@ -13,27 +19,46 @@ import com.github.javafaker.Faker;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 
-public class DiceJobSearch {
-	public static void main(String[] args) {
-		String count;
+public class DiceJobWithTextFile {
+
+	public static void main(String[] args) throws IOException {
+		Scanner input = new Scanner(System.in);
+		System.out.println("Please enter how many random componies you want to search for on Dice");
 		
-		List<String> s1 = new ArrayList();
+		int numberOfComp = Integer.parseInt(input.nextLine());
+		// Creating text file with test data in it:
+		String txtFileList = "C:\\Users\\Yaroslav Kryvda\\Desktop\\JAVA\\Java Codes\\maven-test-automatio\\textTestInput";
 		
-//		s1.add("Phyton");
-//		s1.add("JAVA");
-//		s1.add("Selenium");
-//		s1.add("QTP");
 		
-	
+		 PrintWriter testDataFile = new PrintWriter(txtFileList);
+		 Faker c1 = new Faker();
+		 
+		 // Setting 5 lines of data
+		 for(int i=0; i<numberOfComp; i++) {
+			 testDataFile.println(c1.company().name());
+			}
+		 	testDataFile.close();
+		 
+		 //Creating Array where we store our testData
+		 List<String> s1 = new ArrayList();
+		 //Creating buffer so we can read our newly created textFile and set to our Array List.
+		 File file = new File(txtFileList);
+		 BufferedReader br = new BufferedReader(new FileReader(file));
+		 String theLine;
+
+		 while ((theLine = br.readLine()) != null)
+			  s1.add(theLine);
 		
-		System.out.println(s1.size());
 		
-		Faker c1 = new Faker();
+		 
+		 //Creating PrintWriter in order to overWrite our created txt
 		
-		for(int i=0; i<5; i++) {
-			s1.add(c1.company().name());
-		}
 		
+		PrintWriter out = new PrintWriter(txtFileList);
+		
+		//Creating count string to store the Dice Search result.
+		  String count;
+			
 		
 		//		System.setProperty("webdriver.chrome.driver",
 		//		"C:\\Users\\Yaroslav Kryvda\\Documents\\selenium dependencies\\drivers\\chromedriver.exe");
@@ -74,12 +99,11 @@ public class DiceJobSearch {
 		 */
 		for(int i=0; i<s1.size(); i++) {
 			
-			
 		String keyword= s1.get(i);
 		driver.findElement(By.id("search-field-keyword")).clear();
 		driver.findElement(By.id("search-field-keyword")).sendKeys(keyword);
 		
-		String location ="22102";
+		String location ="22311";
 		driver.findElement(By.id("search-field-location")).clear();
 		driver.findElement(By.id("search-field-location")).sendKeys(location);
 		
@@ -88,20 +112,20 @@ public class DiceJobSearch {
 		if(driver.getTitle().contains("Jobs not found | Dice.com") ) {
 			
 			count="0";
-		
+			out.println(s1.get(i)+": "+count); 
 		}else {
 			count = driver.findElement(By.id("posiCountId")).getText();//compile err
-			
+			out.println(s1.get(i)+": "+count);
 		}
 		
 		System.out.println(count);
 		count= count.replaceAll(",",""); //Integer.parseInt("123")
-		if(Integer.valueOf(count)>=0) {
-			
-			
+		
+		//Re setting my Array List
+		if(Integer.valueOf(count)>=0) {	
 			s1.set(i, s1.get(i)+ "-" + count);
-			
-			System.out.println("There are more then a 1000 position for java developres");
+	
+			System.out.println("There are more then 0 position for java developres");
 		}else {
 			System.out.println("Well too bad bro, better start learning VBScript ;)");
 		}
@@ -113,6 +137,7 @@ public class DiceJobSearch {
 		
 		
 		driver.close();
+		out.close();
 		
 		System.out.println(s1);
 		System.out.println("Step completed " + LocalDateTime.now());
@@ -121,5 +146,4 @@ public class DiceJobSearch {
 		
 		
 	}
-
 }
